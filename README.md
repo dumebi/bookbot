@@ -68,7 +68,7 @@ This app contains an [ngrok wrapper](https://www.npmjs.com/package/ngrok) as a d
 
 Init.ai facilitates both "development" and "production" webhooks. The intention is that the "development" webhook may be used to help you iterate on and test your project from the Init.ai console without having to connect to an external messaging service.
 
-See [docs](https://docs.init.ai/webhooks)
+See [docs](https://docs.init.ai/v2.0/docs/webhooks) for more.
 
 # Migrating your logic
 
