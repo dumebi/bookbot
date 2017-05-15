@@ -21,7 +21,9 @@ Before getting started, make sure you have:
     You should see this in your terminal:
     ![demo-server](https://cloud.githubusercontent.com/assets/1217116/25285614/82bc3948-2680-11e7-830e-3abd50fd2ab4.gif)
 
-1. Provide your server's address to the [Init.ai console]()
+1. Provide your server's address to the [Init.ai console](https://console.init.ai)
+
+> **Note:** The `dev` task is not supported on Windows. If you are using Windows, see the [exposing localhost](#exposing-localhost) for instructions.
 
 # Scaffold
 
@@ -63,6 +65,8 @@ The `dev` task automatically provisions an [ngrok](https://ngrok.com/) URL to [e
 This application can be run on any service you would like and ships completely ready to [deploy to Heroku](#heroku). During development however, it is recommended you make your local machine accessible to external services. We suggest using a tool such as [ngrok](https://ngrok.com/) or [localtunnel](https://localtunnel.github.io/www/).
 
 This app contains an [ngrok wrapper](https://www.npmjs.com/package/ngrok) as a dependency. If you do not have [ngrok](https://ngrok.com) installed you can run: `npm run ngrok` to generate a URL which you can provide to the [Init.ai console](https://console.init.ai) for testing your project.
+
+If you are using Windows, it is recommended that you start the server/watch task using `npm run watch` and then setup [ngrok](https://ngrok.com/#download) manually.
 
 # Configuring webhooks
 
