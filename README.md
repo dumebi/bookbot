@@ -27,7 +27,7 @@ Before getting started, make sure you have:
 
 # Scaffold
 
-This application contains a basic server configuration for handling webhooks as well as a boilerplate implementation of the Init.ai [Nods.js SDK](https://www.npmjs.com/package/initai-node). Out of the box, this application can be deployed to [Heroku](#heroku), but is designed to facilitate local development and testing as well.
+This application contains a basic server configuration for handling webhooks as well as a boilerplate implementation of the Init.ai [Node.js SDK](https://www.npmjs.com/package/initai-node). Out of the box, this application can be deployed to [Heroku](#heroku), but is designed to facilitate local development and testing as well.
 
 ### Server
 
@@ -41,9 +41,7 @@ The handler for the webhook endpoint will invoke the `runLogic` function which c
 
 If you are using existing logic that was previously hosted by Init.ai, you may keep what you have written. See [migrating your logic](#migrating-your-logic) for more.
 
-#### Sending the result
-
-As mentioned above, the Promise resolved by `runLogic` will contain the necessary data to send to the Init.ai API for processing. This has been abstracted out into the [`sendLogicResult`](sendLogicResult.js) module.
+> **Sending the result**: Prior to version 0.0.14 of the [Node.js SDK](https://www.npmjs.com/package/initai-node), it was left to you, the developer to send the result of your logic run to the Init.ai API manually. A [`sendResult`](https://docs.init.ai/docs/node-js-sdk-client-methods#section-sendresult) method has since been added which will make this request for you.
 
 # Running the server locally
 
@@ -76,6 +74,41 @@ See [docs](https://docs.init.ai/v2.0/docs/webhooks) for more.
 
 # Migrating your logic
 
+## Using `sendResult`
+
+Prior to version 0.0.14 of the [Node.js SDK](https://www.npmjs.com/package/initai-node), it was left to you, the developer to send the result of your logic run to the Init.ai API manually. A [`sendResult`](https://docs.init.ai/docs/node-js-sdk-client-methods#section-sendresult) method has since been added which will make this request for you.
+
+If you used the Node.js SDK prior to 0.0.14, you likely used `client.done` in conjunction with a `succeed` callback like this:
+
+```js
+const client = InitClient.create(data, {succeed: callback})
+
+// In your code elsewhere you would call .done()
+client.done()
+```
+
+To use the new `sendResult` method, you should amend your code as follows.
+
+First, remove the configuration object from the create call:
+
+```js
+const client = InitClient.create(data)
+```
+
+Next, create a `done` wrapper (so you don't have to call `client.sendResult` multiple places in your code):
+
+```js
+const done = () => client.sendResult()
+  .then(() => console.log('Success!'))
+  .catch((err) => console.log('Error', err))
+```
+
+`sendResult` returns a Promise which you can use to handle the success or failure of your logic run.
+
+Now that you have your own `done` wrapper, you can replace instances of `client.done` with a call to your `done` function.
+
+## Logic created prior to 5/1/2017
+
 In early versions of the Init.ai platform, logic was hosted on [AWS Lambda](https://aws.amazon.com/lambda/) instances provisioned automatically for each project. As such, certain patterns were applied to our [node library](https://www.npmjs.com/package/initai-node) and the projects scaffolded by Init.ai. Namely, this included a file located at `behavior/scripts/index.js` which exported a `handle` function to which an instantiated `client` was provided as an arugment:
 
 ```js
@@ -89,17 +122,39 @@ This pattern still works, however, now you are in charge of provisioning the `cl
 ```js
 const InitClient = require('initai-node')
 const logicScript = require('./behavior/scripts')
+const axios = require('axios')
 
 const initNodeClient = InitClient.create(data, {
   succeed(result) {
-    sendLogicResult(data.payload)(result)
+    // Make a request to the Init.ai API to send the result of the logic run
+    // Docs: https://docs.init.ai/docs/webhooks#section-logicinvocation
+    const {
+      current_application: {id: app_id},
+      invocation_data: {api: {base_url}, auth_token, invocation_id},
+      users,
+    } = data.payload
+
+    // TODO: This needs to be v2 when released
+    const url = `${base_url}/api/v1/remote/logic/invocations/${invocation_id}/result`
+    const headers = {
+      'authorization': `Bearer ${auth_token}`,
+      'content-type': 'application/json',
+    }
+    const data = {
+      invocation: {app_id, app_user_id: Object.keys(users)[0], invocation_id},
+      result,
+    }
+
+    axios.request({data, headers, method: 'post', url})
+      .then(() => console.log('Success!'))
+      .catch((error) => {console.log(new Error(error))})
   }
 })
 
 logicScript.handle(initNodeClient)
 ```
 
-Additionally, you may want to delete the accompanying `runLogic.js` file in this case.
+Make sure to install the `axios` library and delete the accompanying `runLogic.js` file in this case.
 
 # Deployments
 

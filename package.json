@@ -11,10 +11,9 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "axios": "^0.15.3",
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
-    "initai-node": "~0.0.11"
+    "initai-node": "~0.0.14"
   },
   "devDependencies": {
     "chalk": "^1.1.3",
