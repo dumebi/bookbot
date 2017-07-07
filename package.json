@@ -13,7 +13,7 @@
   "dependencies": {
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
-    "initai-node": "~0.0.14"
+    "initai-node": "^0.0.14"
   },
   "devDependencies": {
     "chalk": "^1.1.3",

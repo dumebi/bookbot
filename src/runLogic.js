@@ -1,6 +1,6 @@
 const InitClient = require('initai-node')
 
-module.exports = function runLogic(eventData) {
+const runLogic = eventData => {
   return new Promise((resolve, reject) => {
     const client = InitClient.create(eventData)
 
@@ -8,7 +8,9 @@ module.exports = function runLogic(eventData) {
     const done = () => client.sendResult().then(resolve).catch(reject)
 
     // Add your custom logic here!
-    client.addTextResponse('hialResponding from `runLogic.js`!')
+    client.addTextResponse('Responding from `runLogic.js`!')
     done()
   })
 }
+
+module.exports = runLogic
