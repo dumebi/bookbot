@@ -1,6 +1,6 @@
 {
   "name": "sample-logic-server",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A sample webhook server to process logic invocations for Init.ai projects.",
   "main": "server.js",
   "scripts": {
