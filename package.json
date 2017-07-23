@@ -11,9 +11,11 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "acuityscheduling": "^0.1.7",
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
-    "initai-node": "^0.0.14"
+    "initai-node": "^0.0.14",
+    "moment": "^2.18.1"
   },
   "devDependencies": {
     "chalk": "^1.1.3",
